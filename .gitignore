@@ -1,0 +1,4 @@
+node_modules
+.env
+stalkerd/target
+.DS_Store

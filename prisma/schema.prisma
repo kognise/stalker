@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model OauthToken {
+  refreshToken String    @id
+  accessToken  String
+  expiration   DateTime?
+}
+
+model Activity {
+  time  DateTime @id @default(now())
+  emoji String
+  label String
+}
+
+model ManualActivity {
+  id    String   @id @default(cuid())
+  time  DateTime
+  emoji String
+  label String
+}
+
+model Ping {
+  key  String   @id
+  time DateTime
+}
+
+model List {
+  id           String   @id @default(cuid())
+  key          String
+  sourceDevice String
+  time         DateTime
+  list         String[]
+
+  @@unique([key, sourceDevice])
+}
+
+model ZoomUser {
+  id         String   @id
+  lastUpdate DateTime
+  inMeeting  Boolean
+}
