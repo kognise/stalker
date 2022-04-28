@@ -1,0 +1,14 @@
+{
+	"name": "Stalker",
+	"version": "0.1.0",
+	"description": "A thing that watches everything everything I do",
+	"manifest_version": 3,
+	"permissions": [
+		"tabs",
+		"alarms",
+		"storage"
+	],
+	"background": {
+		"service_worker": "background.js"
+	}
+}

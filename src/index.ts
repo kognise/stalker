@@ -88,7 +88,7 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 		return { emoji: '👩‍💻', label: 'programming' }
 
 	// Figma:
-	if (apps.includes('figma') || domains.includes('figma.com')) return { emoji: '🎨', label: 'designing visuals' }
+	if (apps.includes('figma') || domains.includes('figma.com')) return { emoji: '🎨', label: 'doing visual design' }
 
 	// Writing websites:
 	if (['docs.google.com', 'app.grammarly.com'].some((domain) => domains.includes(domain)))
@@ -110,8 +110,8 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 	}
 
 	// Fallback:
-	if (desktopDiff < expiration) return { emoji: '💻', label: 'doing something on my computer' }
-	if (mobileDiff < expiration) return { emoji: '📱', label: 'doing something on my phone' }
+	if (desktopDiff < expiration) return { emoji: '💻', label: 'doing stuff on my computer' }
+	if (mobileDiff < expiration) return { emoji: '📱', label: 'doing stuff on my phone' }
 	return { emoji: '✨', label: 'doing something irl' }
 }
 
