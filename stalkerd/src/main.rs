@@ -4,9 +4,12 @@
 mod input;
 mod processes;
 
+use std::fs::File;
 use std::thread::sleep;
 use std::time::Duration;
 
+use daemonize::Daemonize;
+use home::home_dir;
 use reqwest::blocking::Client as HttpClient;
 use serde::Serialize;
 use sysinfo::System;
@@ -16,12 +19,32 @@ use urlencoding::encode;
 use crate::input::last_input_tick;
 use crate::processes::collect_processes;
 
+const PASSWORD: &str = include_str!("../.password");
+
 #[derive(Serialize)]
 struct List<'a> {
     list: Vec<&'a str>,
 }
 
 fn main() {
+    let home = home_dir().expect("Failed to get home directory");
+    let stdout =
+        File::create(home.join(".stalkerd.log")).expect("Failed to open logfile for stdout");
+    let stderr = File::options()
+        .append(true)
+        .open(home.join(".stalkerd.log"))
+        .expect("Failed to open logfile for stderr");
+    let daemonize = Daemonize::new()
+        .pid_file(home.join(".stalkerd.pid"))
+        .stdout(stdout)
+        .stderr(stderr);
+
+    println!("Starting daemon...");
+    match daemonize.start() {
+        Ok(_) => println!("Daemon started!"),
+        Err(err) => panic!("Error starting daemon: {}", err),
+    }
+
     let mut system = System::default();
     let hostname = system.host_name().expect("No hostname");
     let http = HttpClient::new();
@@ -38,8 +61,8 @@ fn main() {
             if new_tick != tick {
                 // Ping backend:
                 tick = new_tick;
-                http.post("http://localhost:3000/ping/desktop")
-                    .bearer_auth("uwu")
+                http.post("https://api.kognise.dev/ping/desktop")
+                    .bearer_auth(PASSWORD)
                     .send()?;
 
                 // Update process list:
@@ -47,10 +70,10 @@ fn main() {
                 let apps_empty = apps.is_empty();
                 if !(apps_empty && last_apps_empty) {
                     http.post(format!(
-                        "http://localhost:3000/list/apps/{}",
+                        "https://api.kognise.dev/list/apps/{}",
                         encode(&hostname)
                     ))
-                    .bearer_auth("uwu")
+                    .bearer_auth(PASSWORD)
                     .json(&List { list: apps })
                     .send()?;
                 }

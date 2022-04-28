@@ -1,6 +1,7 @@
 node_modules
 .env
 stalkerd/target
+stalkerd/.password
 .DS_Store
 dist
 tsconfig.tsbuildinfo

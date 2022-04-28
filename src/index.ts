@@ -1,5 +1,6 @@
 import fastify from 'fastify'
 import { CronJob } from 'cron'
+import cors from '@fastify/cors'
 
 import { PollingState, pollingStateRegistry } from './polling.js'
 import {
@@ -29,6 +30,7 @@ const server = fastify({
 		level: process.env.LOG_LEVEL ?? 'info'
 	}
 })
+server.register(cors)
 
 const runDecisionTree = async (pollingState: PollingState): Promise<Activity> => {
 	const manualActivity = await prisma.manualActivity.findFirst({ where: {} })
@@ -153,23 +155,10 @@ const start = async () => {
 	server.log.debug(pollingState)
 
 	server.get<{
-		Reply: {
-			activity: Activity
-			lastfm: LastfmState
-			song: LastfmState['track'] & {
-				nowPlaying: boolean
-			}
-		}
+		Reply: { activity: Activity; lastfm: LastfmState }
 	}>('/', async () => {
 		const activity = (await prisma.activity.findFirst({ orderBy: { time: 'desc' } }))!
-		return {
-			activity,
-			lastfm: pollingState.lastfm,
-			song: {
-				...pollingState.lastfm.track,
-				nowPlaying: pollingState.lastfm.nowPlaying
-			}
-		}
+		return { activity, lastfm: pollingState.lastfm }
 	})
 
 	server.post<{
