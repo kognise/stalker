@@ -153,10 +153,23 @@ const start = async () => {
 	server.log.debug(pollingState)
 
 	server.get<{
-		Reply: { activity: Activity; lastfm: LastfmState }
+		Reply: {
+			activity: Activity
+			lastfm: LastfmState
+			song: LastfmState['track'] & {
+				nowPlaying: boolean
+			}
+		}
 	}>('/', async () => {
 		const activity = (await prisma.activity.findFirst({ orderBy: { time: 'desc' } }))!
-		return { activity, lastfm: pollingState.lastfm }
+		return {
+			activity,
+			lastfm: pollingState.lastfm,
+			song: {
+				...pollingState.lastfm.track,
+				nowPlaying: pollingState.lastfm.nowPlaying
+			}
+		}
 	})
 
 	server.post<{
@@ -262,7 +275,7 @@ const start = async () => {
 	)
 
 	await updateDecisionTree(pollingState)
-	await server.listen(3000)
+	await server.listen(3000, '0.0.0.0')
 }
 
 start().catch(async (error) => {

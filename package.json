@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon src/index.ts --exec ts-node-esm",
-    "start": "ts-node-esm src/index.ts",
+    "build": "prisma generate && tsc",
+    "start": "prisma db push --skip-generate && node dist/index.js",
     "fmt": "prettier --write ./src"
   },
   "dependencies": {
