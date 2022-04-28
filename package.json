@@ -1,6 +1,6 @@
 {
-  "name": "tracker-backend",
-  "version": "1.0.0",
+  "name": "stalker",
+  "version": "0.1.0",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
