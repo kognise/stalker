@@ -6,14 +6,6 @@ dist
 tsconfig.tsbuildinfo
 
 mobile/local.properties
-mobile/.idea/caches
-mobile/.idea/libraries
-mobile/.idea/modules.xml
-mobile/.idea/workspace.xml
-mobile/.idea/navEditor.xml
-mobile/.idea/assetWizardSettings.xml
-mobile/.idea/shelf
-mobile/.idea/workspace.xml
 mobile/build
 mobile/app/build
 mobile/captures
@@ -21,6 +13,26 @@ mobile/*.iml
 mobile/.gradle
 mobile/.externalNativeBuild
 mobile/.cxx
+
+mobile/.idea/**/workspace.xml
+mobile/.idea/**/tasks.xml
+mobile/.idea/**/usage.statistics.xml
+mobile/.idea/**/dictionaries
+mobile/.idea/**/shelf
+mobile/.idea/**/contentModel.xml
+mobile/.idea/**/dataSources/
+mobile/.idea/**/dataSources.ids
+mobile/.idea/**/dataSources.local.xml
+mobile/.idea/**/sqlDataSources.xml
+mobile/.idea/**/dynamic.xml
+mobile/.idea/**/uiDesigner.xml
+mobile/.idea/**/dbnavigator.xml
+mobile/.idea/**/gradle.xml
+mobile/.idea/**/libraries
+mobile/.idea/modules.xml
+mobile/.idea/*.iml
+mobile/.idea/assetWizardSettings.xml
+mobile/.idea/modules
 
 stalkerd/target
 stalkerd/.password
