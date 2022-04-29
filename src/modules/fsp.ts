@@ -99,7 +99,7 @@ export const getFspState = async (): Promise<FspState> => {
 	if (!reservations.results[0]) return { inReservation: false }
 
 	const reservation = await getReservation(app, reservations.results[0].id)
-	const [start, end] = [reservation.start, reservation.end].map(Date.parse)
+	const [start, end] = [reservation.start, reservation.end].map((timestamp) => timestamp + '-05:00').map(Date.parse)
 	const now = Date.now()
 
 	return {
