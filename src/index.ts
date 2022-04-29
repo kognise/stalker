@@ -1,6 +1,7 @@
 import fastify from 'fastify'
 import { CronJob } from 'cron'
 import cors from '@fastify/cors'
+import fs from 'fs'
 
 import { PollingState, pollingStateRegistry } from './polling.js'
 import {
@@ -162,6 +163,59 @@ const start = async () => {
 		return { activity, lastfm: pollingState.lastfm }
 	})
 
+	server.get('/dash', async (req, reply) => {
+		reply.type('html')
+		return fs.createReadStream('dash.html')
+	})
+
+	server.get<{
+		Reply: { history: Activity[] }
+	}>('/history', async () => {
+		const history = await prisma.activity.findMany({ orderBy: { time: 'desc' } })
+		return { history }
+	})
+
+	server.get('/check-auth', { preHandler: [requirePassword] }, async () => ({}))
+
+	server.post<{
+		Body: { emoji: string; label: string }
+	}>(
+		'/manual',
+		{
+			preHandler: [requirePassword],
+			schema: {
+				body: {
+					type: 'object',
+					properties: {
+						emoji: { type: 'string' },
+						label: { type: 'string' }
+					},
+					required: ['emoji', 'label']
+				}
+			}
+		},
+		async (req) => {
+			const { emoji, label } = req.body
+			const current = await prisma.manualActivity.findFirst({ where: {} })
+			const data = { emoji, label, time: new Date() }
+
+			if (current) {
+				await prisma.manualActivity.update({ where: { id: current.id }, data })
+			} else {
+				await prisma.manualActivity.create({ data })
+			}
+
+			await updateDecisionTree(pollingState)
+			return {}
+		}
+	)
+
+	server.post('/manual/clear', { preHandler: [requirePassword] }, async () => {
+		await prisma.manualActivity.deleteMany({ where: {} })
+		await updateDecisionTree(pollingState)
+		return {}
+	})
+
 	server.post<{
 		Params: { key: string }
 	}>('/ping/:key', { preHandler: [requirePassword] }, async (req, reply) => {
@@ -191,7 +245,8 @@ const start = async () => {
 					type: 'object',
 					properties: {
 						list: { type: 'array', items: { type: 'string' } }
-					}
+					},
+					required: ['list']
 				}
 			}
 		},
@@ -239,9 +294,11 @@ const start = async () => {
 							properties: {
 								account_id: { type: 'string' },
 								object: { type: 'object' }
-							}
+							},
+							required: ['account_id', 'object']
 						}
-					}
+					},
+					required: ['event', 'event_ts', 'payload']
 				}
 			}
 		},

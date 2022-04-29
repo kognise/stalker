@@ -1,0 +1,228 @@
+<!-- Code for https://api.kognise.dev/dash, it's all a nightmare. -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="robots" content="noindex" />
+		<title>Stalker Dashboard</title>
+
+		<link rel="icon" href="https://media.kognise.dev/other-avatars/colors-album.png" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap" />
+
+		<style>
+			* {
+				box-sizing: border-box;
+				-webkit-tap-highlight-color: transparent;
+				outline: none;
+			}
+
+			html,
+			body {
+				height: 100%;
+			}
+
+			body {
+				background: #191d20;
+				color: #f8f9fa;
+				font-family: 'IBM Plex Mono', monospace;
+				margin: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			p {
+				margin: 0;
+				user-select: none;
+			}
+
+			#status {
+				user-select: text;
+			}
+
+			#content p {
+				user-select: none;
+			}
+
+			main {
+				background: #212529;
+				padding: 30px;
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+				width: 100%;
+				max-width: 500px;
+			}
+
+			#content {
+				display: none;
+				flex-direction: column;
+				gap: 20px;
+			}
+
+			#buttons {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+
+			input,
+			button {
+				width: 100%;
+				display: block;
+				color: inherit;
+				font-family: inherit;
+				font-size: inherit;
+				padding: 14px;
+			}
+
+			input {
+				border: 2px solid #868e96;
+				background: none;
+			}
+
+			input:focus {
+				border-color: #ced4da;
+			}
+
+			button {
+				background: #343a40;
+				text-align: left;
+				border: none;
+				user-select: none;
+			}
+
+			button:hover,
+			button.active {
+				background: #495057;
+			}
+
+			button:active {
+				background: #868e96;
+			}
+		</style>
+	</head>
+
+	<body>
+		<main>
+			<p>
+				<strong>status:</strong>
+				<span id="status">🤔 loading...</span>
+			</p>
+
+			<div id="content">
+				<p>enter password:</p>
+				<input type="password" id="password" />
+			</div>
+		</main>
+
+		<script>
+			let currentStatus = '🤔'
+
+			const id = {
+				password: document.getElementById('password'),
+				status: document.getElementById('status'),
+				content: document.getElementById('content')
+			}
+
+			const options = [
+				{ emoji: '💤', label: 'sleeping' },
+				{ emoji: '✈️', label: 'traveling' },
+				{ emoji: '⛔', label: 'internet-less' },
+				{ emoji: '❌', label: 'clear manual activity' } // Jankiness!
+			]
+
+			const checkAuth = async () => {
+				const res = await fetch('/check-auth', {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('password')}`
+					}
+				})
+				return res.ok
+			}
+
+			const launch = () => {
+				id.content.querySelectorAll('*').forEach((child) => child.remove())
+				id.content.innerHTML = `
+					<p>manual override:</p>
+					<div id='buttons'></div>
+				`
+				id.buttons = document.getElementById('buttons')
+
+				for (const { emoji, label } of options) {
+					const button = document.createElement('button')
+					button.id = emoji
+					button.innerText = `${emoji} ${label}`
+					if (currentStatus === emoji) button.classList.add('active')
+
+					button.addEventListener('click', async () => {
+						if (emoji === '❌') {
+							if (document.getElementById(currentStatus))
+								document.getElementById(currentStatus).classList.remove('active')
+							await fetch('/manual/clear', {
+								method: 'POST',
+								headers: {
+									Authorization: `Bearer ${localStorage.getItem('password')}`
+								}
+							})
+							const res = await fetch('/')
+							const { activity } = await res.json()
+							currentStatus = activity.emoji
+							id.status.innerText = `${activity.emoji} ${activity.label}`
+							return
+						}
+
+						if (currentStatus === emoji) return
+						fetch('/manual', {
+							method: 'POST',
+							headers: {
+								'Content-Type': 'application/json',
+								Authorization: `Bearer ${localStorage.getItem('password')}`
+							},
+							body: JSON.stringify({ emoji, label })
+						})
+						if (document.getElementById(currentStatus))
+							document.getElementById(currentStatus).classList.remove('active')
+						currentStatus = emoji
+						button.classList.add('active')
+						id.status.innerText = `${emoji} ${label}`
+					})
+					id.buttons.appendChild(button)
+				}
+			}
+
+			fetch('/')
+				.then((res) => res.json())
+				.then(({ activity }) => {
+					if (currentStatus === activity.emoji) return
+					if (document.getElementById(currentStatus)) document.getElementById(currentStatus).classList.remove('active')
+					if (document.getElementById(currentStatus)) document.getElementById(currentStatus).classList.add('active')
+					currentStatus = activity.emoji
+					id.status.innerText = `${activity.emoji} ${activity.label}`
+				})
+				.then(() => checkAuth())
+				.then((valid) => {
+					id.content.style.display = 'flex'
+					if (valid) {
+						launch()
+					} else {
+						id.password.addEventListener('keypress', async (event) => {
+							if (event.key === 'Enter') {
+								localStorage.setItem('password', id.password.value)
+								if (await checkAuth()) {
+									launch()
+								} else {
+									id.password.value = ''
+								}
+							}
+						})
+					}
+				})
+				.catch(console.error)
+		</script>
+	</body>
+</html>
