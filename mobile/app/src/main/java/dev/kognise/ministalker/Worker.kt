@@ -40,7 +40,7 @@ class Worker(context: Context, parameters: WorkerParameters) : CoroutineWorker(c
             var delaySecs: Long = 60
             try {
                 if (isPhoneActive()) {
-                    http.get {
+                    http.post {
                         url("https://api.kognise.dev/ping/mobile")
                         bearerAuth(password)
                     }
