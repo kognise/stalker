@@ -122,6 +122,20 @@ const updateDecisionTree = async (pollingState: PollingState): Promise<Activity>
 	const curActivity = await prisma.activity.findFirst({ orderBy: { time: 'desc' } })
 	if (activity.emoji !== curActivity?.emoji) {
 		await prisma.activity.create({ data: activity })
+		await fetch('https://slack.com/api/users.profile.set', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${env.slackToken}`
+			},
+			body: JSON.stringify({
+				profile: {
+					status_text: activity.label[0].toUpperCase() + activity.label.slice(1),
+					status_emoji: activity.emoji,
+					status_expiration: 0
+				}
+			})
+		})
 	}
 	return activity
 }

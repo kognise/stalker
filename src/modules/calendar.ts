@@ -105,23 +105,21 @@ export interface CalendarState {
 }
 
 export const getCalendarState = async (): Promise<CalendarState> => {
-	return { eventName: null }
+	let events
+	try {
+		const token = await prisma.oauthToken.findUnique({ where: { refreshToken: env.calendarRefreshToken } })
+		if (!token) throw new Error('No calendar access token found')
+		events = await getCalendarEvents(env.calendarId, new Date(), 1, token.accessToken)
+	} catch (err) {
+		const accessToken = await updateAccessToken(env.calendarRefreshToken)
+		events = await getCalendarEvents(env.calendarId, new Date(), 1, accessToken)
+	}
 
-	// let events
-	// try {
-	// 	const token = await prisma.oauthToken.findUnique({ where: { refreshToken: env.calendarRefreshToken } })
-	// 	if (!token) throw new Error('No calendar access token found')
-	// 	events = await getCalendarEvents(env.calendarId, new Date(), 1, token.accessToken)
-	// } catch (err) {
-	// 	const accessToken = await updateAccessToken(env.calendarRefreshToken)
-	// 	events = await getCalendarEvents(env.calendarId, new Date(), 1, accessToken)
-	// }
+	if (events[0]?.status !== 'confirmed') return { eventName: null }
 
-	// if (events[0]?.status !== 'confirmed') return { eventName: null }
+	const [start, end] = [events[0].start.dateTime, events[0].end.dateTime].map(Date.parse)
+	const now = Date.now()
+	if (now < start || now > end) return { eventName: null }
 
-	// const [start, end] = [events[0].start.dateTime, events[0].end.dateTime].map(Date.parse)
-	// const now = Date.now()
-	// if (now < start || now > end) return { eventName: null }
-
-	// return { eventName: events[0].summary ?? '(No title)' }
+	return { eventName: events[0].summary ?? '(No title)' }
 }

@@ -10,6 +10,7 @@ const getVarOrPanic = (key: string): string => {
 
 const env = {
 	password: getVarOrPanic('PASSWORD'),
+	slackToken: getVarOrPanic('SLACK_TOKEN'),
 	fspUsername: getVarOrPanic('FSP_USERNAME'),
 	fspPassword: getVarOrPanic('FSP_PASSWORD'),
 	fspOperatorId: parseInt(getVarOrPanic('FSP_OPERATOR_ID')),
