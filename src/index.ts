@@ -323,6 +323,7 @@ const start = async () => {
 			}
 			if (req.body.event === 'user.presence_status_updated') {
 				const { id, presence_status } = req.body.payload.object as { id: string; presence_status: string }
+				req.log.info(`zoom presence: ${presence_status}`)
 				const inMeeting = ['In_Meeting', 'Presenting', 'On_Phone_Call'].includes(presence_status)
 				await prisma.zoomUser.upsert({
 					where: { id },
