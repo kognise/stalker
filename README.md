@@ -28,4 +28,6 @@ Compile StalkerMini (mobile app) to an APK with Gradle, I just used Android Stud
 
 Stalkerd (desktop daemon) needs a `.password` file to compile, which Rust embeds in the binary. Don't share the binary! I made this technical decision because I'm lazy.
 
+The browser extension is quite cursed. If it doesn't work, you'll have to open the dev console; the error message should explain how to set the password.
+
 Stalkerd is not cross-platform yet, only supports macOS.
