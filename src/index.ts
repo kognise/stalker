@@ -111,8 +111,8 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 	}
 
 	// Fallback:
-	if (desktopDiff < expiration) return { emoji: '💻', label: 'doing stuff on my computer' }
 	if (mobileDiff < expiration) return { emoji: '📱', label: 'doing stuff on my phone' }
+	if (desktopDiff < expiration) return { emoji: '💻', label: 'doing stuff on my computer' }
 	return { emoji: '✨', label: 'doing something irl' }
 }
 
