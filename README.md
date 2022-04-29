@@ -31,3 +31,8 @@ Stalkerd (desktop daemon) needs a `.password` file to compile, which Rust embeds
 The browser extension is quite cursed. If it doesn't work, you'll have to open the dev console; the error message should explain how to set the password.
 
 Stalkerd is not cross-platform yet, only supports macOS.
+
+## Todo
+
+- Hot and sexy stats and graphs
+- Some way to let me know if something is breaking on the backend
