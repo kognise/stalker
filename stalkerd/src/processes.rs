@@ -12,6 +12,7 @@ pub fn collect_processes(system: &mut System) -> Vec<&'static str> {
             "Max" => collected.push("max"),
             "zoom.us" => collected.push("zoom"),
             "Figma" => collected.push("figma"),
+            "studio" => collected.push("android-studio"),
             "Electron" => {
                 if process
                     .exe()

@@ -81,7 +81,8 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 		return { emoji: '📞', label: 'on a call' }
 
 	// Programming apps:
-	if (['vscode', 'terminal'].some((app) => apps.includes(app))) return { emoji: '👩‍💻', label: 'programming' }
+	if (['vscode', 'terminal', 'android-studio'].some((app) => apps.includes(app)))
+		return { emoji: '👩‍💻', label: 'programming' }
 
 	// Programming websites:
 	if (['github.com', 'replit.com', 'github.dev', 'vscode.dev'].some((domain) => domains.includes(domain)))

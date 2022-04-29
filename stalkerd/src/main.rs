@@ -78,8 +78,6 @@ fn main() {
                     .send()?;
                 }
                 last_apps_empty = apps_empty;
-
-                delay = Duration::from_secs(60);
             } else {
                 delay = Duration::from_secs(10);
             }
