@@ -37,4 +37,5 @@ Stalkerd is not cross-platform yet, only supports macOS.
 - Hot and sexy stats and graphs
 - Some way to let me know if something is breaking on the backend
 - Only ping from desktop if computer isn't locked
+- Figure out why StalkerMini sometimes gets yeeted by the system
 - Improve code quality (lmao as if)
