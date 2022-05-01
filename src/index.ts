@@ -96,6 +96,10 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 	if (['docs.google.com', 'app.grammarly.com'].some((domain) => domains.includes(domain)))
 		return { emoji: '📝', label: 'writing something' }
 
+	// Gaming:
+	if (['minecraft', 'rimworld', 'celeste', 'factorio'].some((app) => apps.includes(app)))
+		return { emoji: '🎮', label: 'gaming' }
+
 	// Listening to music:
 	if (pollingState.lastfm.nowPlaying) return { emoji: '🎧', label: 'listening to music' }
 

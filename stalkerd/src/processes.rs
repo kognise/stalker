@@ -13,6 +13,14 @@ pub fn collect_processes(system: &mut System) -> Vec<&'static str> {
             "zoom.us" => collected.push("zoom"),
             "Figma" => collected.push("figma"),
             "studio" => collected.push("android-studio"),
+            "Celeste" => collected.push("celeste"),
+            "factorio" => collected.push("factorio"),
+            "RimWorld by Ludeon Studios" => collected.push("rimworld"),
+            "java" => {
+                if process.cmd().iter().any(|c| c.contains("minecraft")) {
+                    collected.push("minecraft")
+                }
+            }
             "Electron" => {
                 if process
                     .exe()
