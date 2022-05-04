@@ -81,6 +81,16 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 	if (['meet.google.com', 'voice.google.com'].some((domain) => domains.includes(domain)))
 		return { emoji: '📞', label: 'on a call' }
 
+	// Call calendar regex:
+	if (pollingState.calendar.eventName) {
+		const callRegex =
+			/^(?:[A-Z][a-z]+ )*[A-Z][a-z]+ (\+|<>|\/) (?:[A-Z][a-z]+ )*[A-Z][a-z]+(?: \1 (?:[A-Z][a-z]+ )*[A-Z][a-z]+)*$/
+		if (callRegex.test(pollingState.calendar.eventName.trim())) return { emoji: '📞', label: 'on a call' }
+	}
+
+	// Call calendar check:
+	if (pollingState.calendar.isVideoMeeting) return { emoji: '📞', label: 'on a call' }
+
 	// Programming apps:
 	if (['vscode', 'terminal', 'android-studio'].some((app) => apps.includes(app)))
 		return { emoji: '👩‍💻', label: 'programming' }
