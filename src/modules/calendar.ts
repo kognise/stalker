@@ -137,7 +137,7 @@ export const getCalendarState = async (): Promise<CalendarState> => {
 		eventName: events[0].summary ?? '(No title)',
 		isVideoMeeting:
 			events[0].conferenceData?.entryPoints?.some((entry) => entry.entryPointType === 'video') ||
-			events[0].location.includes('zoom.us') ||
+			events[0]?.location?.includes('zoom.us') ||
 			false
 	}
 }

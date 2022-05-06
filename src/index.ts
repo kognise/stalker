@@ -73,9 +73,6 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 	if (['lesson', 'class'].some((key) => pollingState.calendar.eventName?.toLowerCase()?.includes(key)))
 		return { emoji: '📚', label: 'in class' }
 
-	// Zoom call:
-	if (apps.includes('zoom') && (await isInZoomMeeting())) return { emoji: '📞', label: 'on a call' }
-
 	// Call websites:
 	const domains = desktopDiff < expiration ? await getList('domains') : []
 	if (['meet.google.com', 'voice.google.com'].some((domain) => domains.includes(domain)))
@@ -90,6 +87,9 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 
 	// Call calendar check:
 	if (pollingState.calendar.isVideoMeeting) return { emoji: '📞', label: 'on a call' }
+
+	// Zoom call:
+	if (apps.includes('zoom') && (await isInZoomMeeting())) return { emoji: '📞', label: 'on a call' }
 
 	// Programming apps:
 	if (['vscode', 'terminal', 'android-studio'].some((app) => apps.includes(app)))
