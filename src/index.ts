@@ -63,7 +63,7 @@ const runDecisionTree = async (pollingState: PollingState): Promise<Activity> =>
 	if (['ableton', 'musescore', 'max'].some((app) => apps.includes(app))) return { emoji: '🎵', label: 'making music' }
 
 	// Music calendar search:
-	if (['cello', 'rehearsal'].some((key) => pollingState.calendar.eventName?.toLowerCase()?.includes(key)))
+	if (['cello', 'rehearsal', 'recital'].some((key) => pollingState.calendar.eventName?.toLowerCase()?.includes(key)))
 		return { emoji: '🎵', label: 'making music' }
 
 	// Toggl tracking:
