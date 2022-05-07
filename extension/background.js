@@ -17,6 +17,7 @@ const update = async () => {
 		.filter((url) => ['http:', 'https:'].includes(url.protocol))
 		.map((url) => url.hostname.toLowerCase())
 		.map((hostname) => (hostname.startsWith('www.') ? hostname.slice(4) : hostname))
+	const uniqueDomains = [...new Set(domains)]
 
 	await fetch(`https://api.kognise.dev/list/domains/${id}`, {
 		method: 'POST',
@@ -24,7 +25,7 @@ const update = async () => {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${password}`
 		},
-		body: JSON.stringify({ list: domains })
+		body: JSON.stringify({ list: uniqueDomains })
 	})
 }
 
