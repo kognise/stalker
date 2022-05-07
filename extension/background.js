@@ -17,7 +17,6 @@ const update = async () => {
 		.filter((url) => ['http:', 'https:'].includes(url.protocol))
 		.map((url) => url.hostname.toLowerCase())
 		.map((hostname) => (hostname.startsWith('www.') ? hostname.slice(4) : hostname))
-
 	const uniqueDomains = [...new Set(domains)]
 
 	await fetch(`https://api.kognise.dev/list/domains/${id}`, {
@@ -28,7 +27,6 @@ const update = async () => {
 		},
 		body: JSON.stringify({ list: uniqueDomains })
 	})
-
 }
 
 chrome.runtime.onInstalled.addListener(() => {
