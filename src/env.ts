@@ -17,7 +17,7 @@ const env = {
 	togglApiKey: getVarOrPanic('TOGGL_API_KEY'),
 	lastfmUsername: getVarOrPanic('LASTFM_USERNAME'),
 	lastfmApiKey: getVarOrPanic('LASTFM_API_KEY'),
-	calendarId: getVarOrPanic('CALENDAR_ID'),
+	calendarIds: getVarOrPanic('CALENDAR_IDS').split(','),
 	calendarRefreshToken: getVarOrPanic('CALENDAR_REFRESH_TOKEN'),
 	calendarClientId: getVarOrPanic('CALENDAR_CLIENT_ID'),
 	calendarClientSecret: getVarOrPanic('CALENDAR_CLIENT_SECRET'),

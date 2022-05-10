@@ -34,8 +34,7 @@ Stalkerd is not cross-platform yet, only supports macOS.
 
 ## Todo
 
-- Hot and sexy stats and graphs
 - Some way to let me know if something is breaking on the backend
 - Figure out why StalkerMini sometimes gets yeeted by the system
-- Identify why Zoom occasionally doesn't work
+- Maybe switch to Spotify API for now playing
 - Improve code quality (lmao as if)

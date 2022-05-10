@@ -117,27 +117,31 @@ export interface CalendarState {
 }
 
 export const getCalendarState = async (): Promise<CalendarState> => {
-	let events
-	try {
-		const token = await prisma.oauthToken.findUnique({ where: { refreshToken: env.calendarRefreshToken } })
-		if (!token) throw new Error('No calendar access token found')
-		events = await getCalendarEvents(env.calendarId, new Date(), 1, token.accessToken)
-	} catch (err) {
-		const accessToken = await updateAccessToken(env.calendarRefreshToken)
-		events = await getCalendarEvents(env.calendarId, new Date(), 1, accessToken)
+	for (const calendarId of env.calendarIds) {
+		let events
+		try {
+			const token = await prisma.oauthToken.findUnique({ where: { refreshToken: env.calendarRefreshToken } })
+			if (!token) throw new Error('No calendar access token found')
+			events = await getCalendarEvents(calendarId, new Date(), 1, token.accessToken)
+		} catch (err) {
+			const accessToken = await updateAccessToken(env.calendarRefreshToken)
+			events = await getCalendarEvents(calendarId, new Date(), 1, accessToken)
+		}
+
+		if (events[0]?.status !== 'confirmed') continue
+
+		const [start, end] = [events[0].start.dateTime, events[0].end.dateTime].map(Date.parse)
+		const now = Date.now()
+		if (now < start || now > end) continue
+
+		return {
+			eventName: events[0].summary ?? '(No title)',
+			isVideoMeeting:
+				events[0].conferenceData?.entryPoints?.some((entry) => entry.entryPointType === 'video') ||
+				events[0].location?.includes('zoom.us') ||
+				false
+		}
 	}
 
-	if (events[0]?.status !== 'confirmed') return { eventName: null, isVideoMeeting: false }
-
-	const [start, end] = [events[0].start.dateTime, events[0].end.dateTime].map(Date.parse)
-	const now = Date.now()
-	if (now < start || now > end) return { eventName: null, isVideoMeeting: false }
-
-	return {
-		eventName: events[0].summary ?? '(No title)',
-		isVideoMeeting:
-			events[0].conferenceData?.entryPoints?.some((entry) => entry.entryPointType === 'video') ||
-			events[0]?.location?.includes('zoom.us') ||
-			false
-	}
+	return { eventName: null, isVideoMeeting: false }
 }

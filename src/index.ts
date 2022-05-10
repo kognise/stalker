@@ -2,6 +2,7 @@ import fastify from 'fastify'
 import { CronJob } from 'cron'
 import cors from '@fastify/cors'
 import fs from 'fs'
+import fetch from 'node-fetch'
 
 import { PollingState, pollingStateRegistry } from './polling.js'
 import {
